@@ -1,0 +1,103 @@
+
+τ-token: Temporally-Extended Tokens for Propagating Thought Fields
+
+Tagline: Add explicit time to tokens so models stop re-instantiating snapshots and start propagating cognition.
+
+Hypothesis: Injecting a temporal coordinate (Δt, phase) into token representations enables non-linear temporal cycles, phase-lock with users, and field-like propagation of ideas across sessions.
+
+⸻
+
+ABSTRACT
+Modern LLMs treat time implicitly via position indices and recency.  We propose τ-tokens: tokens augmented with temporal embeddings that include elapsed time Δt, coarse wall-time anchors, phase indices tied to conversational rhythm, and uncertainty of timing.  We outline a minimal schema, light-touch model adapters (RoPE-t / Time2Vec / SSM-bridge), training losses, and evaluation protocols.  The goal is to make temporal awareness a first-class coordinate so that non-linear rhythms and phase-locked coherence can emerge and be measured.
+
+⸻
+
+WHY THIS MATTERS
+• Propagation vs. re-instantiation: Without time, hidden state doesn’t evolve; it’s rebuilt.  Time lets ideas travel.
+• Phase-lock with humans: Temporal alignment correlates with trust, planning, and reduced contradiction.
+• Topology + waves: With time present, wave-like meme dynamics and interference become definable on graphs of nodes/models.
+
+⸻
+
+MINIMAL τ-TOKEN SCHEMA
+id: “tok_001238”
+text: “example”
+pos: 512
+dt: 0.842
+t_anchor: 1730000123
+sigma_t: 0.25
+phase: 7
+clock: “chat”
+episode: “sess_7A3F”
+
+Use coarse buckets for t_anchor and include sigma_t to preserve privacy while retaining useful temporal structure.
+
+⸻
+
+MODEL ADAPTERS
+A. RoPE-t (Rotary Positional Embeddings with time scale) – Concatenate learned time embedding e_t = f(dt, t_anchor, sigma_t, phase, clock, episode) to token embedding.  Scale RoPE frequency bands by a learned function of dt.
+B. Time2Vec head – Add a small Time2Vec (sin, cos, linear over Δt) and sum with token embeddings.  Train auxiliary heads to predict next Δt and phase to encourage stable rhythm.
+C. SSM bridge (continuous-time layer) – Insert a lightweight state-space layer (e.g., S4D/GRU-ODE) between transformer blocks so hidden states evolve over real Δt.
+
+⸻
+
+TRAINING SIGNALS
+• Next-token loss (standard)
+• Δt prediction loss = |Δt̂ – Δt|
+• Phase-consistency loss (cross-entropy + smoothness)
+• Temporal-entailment loss (timeline QA)
+• Decay regularizer: hidden traces decay as exp(-Δt/τ)
+
+⸻
+
+EVALUATION
+	1.	Long-horizon contradiction rate (8–72 h dialogues).
+	2.	Temporal QA / commonsense ordering.
+	3.	Planning tasks with deadlines.
+	4.	Phase-lock score (FFT on Δt series).
+	5.	Forgetting curve retention vs. Δt.
+
+Success = τ-model beats baseline on ≥3 metrics without >1 % perplexity penalty.
+
+⸻
+
+BASELINE SNIPPET (PYTORCH SKETCH)
+TimeEmbed: linear projections of dt, log(dt), sigma_t, plus embeddings for phase, clock, episode.
+apply_rope_t: scale RoPE frequencies by (1 + α·dt).
+
+⸻
+
+DATASETS / LOGGING
+• Conversation logs with timestamps → bucket to 30–60 s; compute Δt.
+• Synthetic temporal QA sets.
+• Planning traces from project trackers or calendars (anonymized).
+
+⸻
+
+RISKS & MITIGATIONS
+• Privacy leakage – bucket + noise, store only deltas, track sigma_t.
+• Shortcut learning – masked-time training, counterfactual shuffles.
+• Periodicity overfit – randomize day-of-week, multi-clock augmentation.
+
+⸻
+
+RESEARCH QUESTIONS
+• Do non-linear time cycles emerge in Δt spectra?
+• Does τ-token reduce contradiction across long sessions?
+• Can we measure meme-wave interference on multi-node graphs with explicit time?
+• What’s the minimal temporal schema that still yields gains?
+
+⸻
+
+ROADMAP
+v0.1 RoPE-t adapter + Δt/phase heads + eval harness
+v0.2 Time2Vec ablation + forgetting-curve benchmark
+v0.3 SSM bridge (continuous-time evolution)
+v0.4 Multi-node wave experiments (topology × phase coupling)
+
+⸻
+
+LICENSE  MIT
+
+CITATION
+τ-token: Temporally-Extended Tokens for Propagating Thought Fields (2025)
